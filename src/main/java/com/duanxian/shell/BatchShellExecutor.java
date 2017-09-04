@@ -30,40 +30,43 @@ public class BatchShellExecutor
             LOGGER.debug("Starting new thread for command execution: "+command);
             ShellExecutorThread executorThread = new ShellExecutorThread(command);
             completionService.submit(executorThread);
+        }
+        for (int i = 0;i<commandList.size();i++){
             Future<Integer> future = null;
             try
             {
+
                 future = completionService.take();
 //                future = executorService.submit(executorThread);
                 Integer exitCode = future.get(TIMEOUT, TimeUnit.SECONDS);
                 LOGGER.info("Exit code is: " + exitCode);
                 LOGGER.info("Command execution result is: " + EXIT_CODE.getResultByExitCode(exitCode));
-                long timeCost = System.currentTimeMillis() - threadStartTime;
+                long timeCost = System.currentTimeMillis() - startTime;
                 LOGGER.info("Time cost: " + timeCost + " ms.");
                 if (exitCode == 0){
-                    addToSuccList(command);
+//                    addToSuccList(command);
                 }
                 else {
-                    addToFailedList(command);
+//                    addToFailedList(command);
                 }
             }
             catch (InterruptedException e)
             {
                 LOGGER.error(e.getMessage());
                 future.cancel(true);
-                addToFailedList(command);
+//                addToFailedList(command);
             }
             catch (ExecutionException e)
             {
                 LOGGER.error(e.getMessage());
                 future.cancel(true);
-                addToFailedList(command);
+//                addToFailedList(command);
             }
             catch (TimeoutException e)
             {
                 LOGGER.error("Shell execution failed due to timeout.");
                 future.cancel(true);
-                addToFailedList(command);
+//                addToFailedList(command);
             }
         }
         executorService.shutdown();
