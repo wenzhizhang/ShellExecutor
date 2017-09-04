@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 public class ShellExecutor
 {
     private static final Logger LOGGER = LogManager.getLogger(ShellExecutor.class);
-    String command;
+    private String command;
 
     public ShellExecutor(String command){
         this.command = command;
@@ -23,26 +24,31 @@ public class ShellExecutor
 
     public int executeShellWithExitCode()
     {
-        String cmd = "sh " + this.command;
+        String cmd = constructCMD();
         try
         {
-            Process proc = Runtime.getRuntime().exec(cmd);
-            int exitCode = proc.waitFor();
+            Process process = Runtime.getRuntime().exec(cmd);
+            ShellOutHandler outHandler = new ShellOutHandler(process.getInputStream(),"STDOUT");
+            outHandler.start();
+            ShellOutHandler errorHandler = new ShellOutHandler(process.getErrorStream(),"ERROR");
+            errorHandler.start();
+            int exitCode = process.waitFor();
             return exitCode;
         }
         catch (IOException e)
         {
             LOGGER.error(e.getMessage());
+            return 3;
         }
         catch (InterruptedException e)
         {
             LOGGER.error(e.getMessage());
+            return 4;
         }
-        return 5;
     }
 
     public ShellFeedback executeShellWithFeedback(){
-        String cmd = "sh " + this.command;
+        String cmd = constructCMD();
         List<String> output = new ArrayList<>();
         int exitCode = 0;
         try
@@ -64,6 +70,21 @@ public class ShellExecutor
            LOGGER.error(e.getMessage());
         }
         return new ShellFeedback(output, exitCode);
+    }
+
+    private String constructCMD(){
+        String cmd;
+        String main = this.command.split(" ")[0];
+        File f = new File(main);
+        if (f.exists()){
+            LOGGER.debug("The command is a shell script.");
+            cmd = "sh " + this.command;
+        }
+        else {
+            LOGGER.debug("The command is a shell command.");
+            cmd = this.command;
+        }
+        return cmd;
     }
 
 }

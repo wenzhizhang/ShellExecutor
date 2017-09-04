@@ -1,0 +1,7 @@
+NE3SWSReregistration.sh
+*.iml
+.idea/
+out/
+target/
+log/
+ReregistrationTest.java

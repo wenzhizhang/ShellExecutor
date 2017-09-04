@@ -16,38 +16,37 @@ import java.util.concurrent.*;
 public class RemoteShellExecutorTest
 {
     private static final Logger LOGGER = LogManager.getLogger(RemoteShellExecutorTest.class);
-    private static final int POOL_SIZE = 30;
+    private static final int POOL_SIZE = 10;
     private static final int TIMEOUT = 60;
 
     public static void main(String[] args)
     {
-        String username = "omc";
-        String password = "omc";
-        String host = "10.92.72.98";
-        String shell = "/home/omc/NE3SWSReregistration.sh ";
+        String username = "root";
+        String password = "arthur";
+        String host = "10.91.51.34";
+        String shell = "/opt/oss/NSN-ne3sws_core/install/bin/NE3SWSReregistration.sh ";
         String charset = "UTF-8";
         int port = 22;
         List<String> agents = new ArrayList<>();
-        agents.add("PLMN-PLMN/FING-1");
-        agents.add("PLMN-PLMN/FING-2");
-        agents.add("PLMN-PLMN/FING-3");
-        agents.add("PLMN-PLMN/FING-4");
-        agents.add("PLMN-PLMN/FING-6");
-        agents.add("PLMN-PLMN/FING-7");
-        agents.add("PLMN-PLMN/FING-8");
-        agents.add("PLMN-PLMN/FING-9");
-        agents.add("PLMN-PLMN/FING-10");
-        agents.add("PLMN-PLMN/FING-11");
-        agents.add("PLMN-PLMN/FING-12");
-        agents.add("PLMN-PLMN/FING-13");
-        agents.add("PLMN-PLMN/FING-14");
-        agents.add("PLMN-PLMN/FING-15");
-        agents.add("PLMN-PLMN/FING-16");
-        agents.add("PLMN-PLMN/FING-17");
-        agents.add("PLMN-PLMN/FING-18");
-        agents.add("PLMN-PLMN/FING-19");
-        agents.add("PLMN-PLMN/FING-20");
-        agents.add("PLMN-PLMN/FING-21");
+        agents.add("PLMN-PLMN/SBTS-1");
+        agents.add("PLMN-PLMN/SBTS-2");
+        agents.add("PLMN-PLMN/SBTS-3");
+        agents.add("PLMN-PLMN/SBTS-4");
+        agents.add("PLMN-PLMN/SBTS-6");
+        agents.add("PLMN-PLMN/SBTS-7");
+        agents.add("PLMN-PLMN/SBTS-8");
+        agents.add("PLMN-PLMN/SBTS-9");
+        agents.add("PLMN-PLMN/SBTS-10");
+        agents.add("PLMN-PLMN/SBTS-11");
+        agents.add("PLMN-PLMN/SBTS-12");
+        agents.add("PLMN-PLMN/SBTS-13");
+        agents.add("PLMN-PLMN/SBTS-14");
+        agents.add("PLMN-PLMN/SBTS-15");
+        agents.add("PLMN-PLMN/SBTS-16");
+        agents.add("PLMN-PLMN/SBTS-17");
+        agents.add("PLMN-PLMN/SBTS-18");
+        agents.add("PLMN-PLMN/SBTS-19");
+        agents.add("PLMN-PLMN/SBTS-20");
         try
         {
 
@@ -78,6 +77,10 @@ public class RemoteShellExecutorTest
                 }
                 LOGGER.info("Time cost for " + agent + ": " + timeCost + " ms.");
             }
+            long endTime = System.currentTimeMillis();
+            long totalTime = endTime - startTime;
+            LOGGER.info("Total time: " + totalTime);
+            System.exit(0);
 
         }
         catch (JSchException e)
