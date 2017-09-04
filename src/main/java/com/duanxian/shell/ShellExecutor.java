@@ -16,7 +16,7 @@ import java.util.List;
 public class ShellExecutor
 {
     private static final Logger LOGGER = LogManager.getLogger(ShellExecutor.class);
-    String command;
+    private String command;
 
     public ShellExecutor(String command){
         this.command = command;
@@ -27,8 +27,12 @@ public class ShellExecutor
         String cmd = constructCMD();
         try
         {
-            Process proc = Runtime.getRuntime().exec(cmd);
-            int exitCode = proc.waitFor();
+            Process process = Runtime.getRuntime().exec(cmd);
+            ShellOutHandler outHandler = new ShellOutHandler(process.getInputStream(),"STDOUT");
+            outHandler.start();
+            ShellOutHandler errorHandler = new ShellOutHandler(process.getErrorStream(),"ERROR");
+            errorHandler.start();
+            int exitCode = process.waitFor();
             return exitCode;
         }
         catch (IOException e)
