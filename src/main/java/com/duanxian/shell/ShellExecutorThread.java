@@ -16,7 +16,7 @@ public class ShellExecutorThread implements Callable
     @Override
     public Object call() throws Exception
     {
-        int exitCode = this.shellExecutor.executeShellWithExitCode();
-        return exitCode;
+        ShellFeedback feedback = this.shellExecutor.executeShellWithFeedback();
+        return feedback;
     }
 }

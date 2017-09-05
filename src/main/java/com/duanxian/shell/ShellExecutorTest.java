@@ -3,6 +3,8 @@ package com.duanxian.shell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -13,35 +15,29 @@ public class ShellExecutorTest
     private static final int POOL_SIZE = 20;
     private static final int TIMEOUT = 60;
     private static final Logger LOGGER = LogManager.getLogger(ShellExecutorTest.class);
+    private static final String TEST = "testShell.sh ";
 
 
     public static void main(String[] args){
-        long startTime = System.currentTimeMillis();
-        String command = args[0];
-        ExecutorService executorService = Executors.newFixedThreadPool(POOL_SIZE);
-        CompletionService<Integer> completionService = new ExecutorCompletionService<Integer>(executorService);
-        ShellExecutorThread executorThread = new ShellExecutorThread(command);
-        completionService.submit(executorThread);
-        Future<Integer> future = null;
-        try
-        {
-            future = completionService.take();
-            Integer exitCode = future.get(TIMEOUT, TimeUnit.SECONDS);
-            LOGGER.info("Exit code is: "+exitCode);
-            long timeCost = System.currentTimeMillis() - startTime;
-            LOGGER.info("Time cost: " + timeCost + " ms.");
+        List<String> cmdList = new ArrayList<>();
+        for (int i=0;i<100;i++){
+            String command = TEST + i;
+            cmdList.add(command);
         }
-        catch (InterruptedException e)
-        {
-            LOGGER.error(e.getMessage());
+        BatchShellExecutor batchShellExecutor = new BatchShellExecutor();
+        batchShellExecutor.executeCommands(cmdList);
+        List<String> succList = batchShellExecutor.getSuccList();
+        List<String> failedList = batchShellExecutor.getFailedList();
+        StringBuilder succSB = new StringBuilder();
+        for (String line: succList){
+            succSB.append(line);
         }
-        catch (ExecutionException e)
-        {
-            LOGGER.error(e.getMessage());
+        LOGGER.info("Succeeded List: \n" + succSB.toString());
+        StringBuilder failedSB = new StringBuilder();
+        for (String line : failedList){
+            failedSB.append(line);
         }
-        catch (TimeoutException e)
-        {
-            LOGGER.error("Shell execution failed due to timeout.");
-        }
+        LOGGER.info("Failed List: \n" + failedSB.toString());
+        System.exit(0);
     }
 }

@@ -147,7 +147,7 @@ public class RemoteShellExecutor {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
-        ShellFeedback shellFeedback = new ShellFeedback(output, response);
+        ShellFeedback shellFeedback = new ShellFeedback(command,output, response);
         return shellFeedback;
 
     }

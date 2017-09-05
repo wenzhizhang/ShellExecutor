@@ -3,88 +3,86 @@ package com.duanxian.shell;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Lionsong on 2017/7/6.
  */
-public class ShellExecutor
-{
+public class ShellExecutor {
     private static final Logger LOGGER = LogManager.getLogger(ShellExecutor.class);
     private String command;
 
-    public ShellExecutor(String command){
+    public ShellExecutor(String command) {
         this.command = command;
     }
 
-    public int executeShellWithExitCode()
-    {
+    public int executeShellWithExitCode() {
         String cmd = constructCMD();
-        try
-        {
+        try {
             Process process = Runtime.getRuntime().exec(cmd);
-            ShellOutHandler outHandler = new ShellOutHandler(process.getInputStream(),"STDOUT");
+            ShellOutHandler outHandler = new ShellOutHandler(process.getInputStream(), "STDOUT");
             outHandler.start();
-            ShellOutHandler errorHandler = new ShellOutHandler(process.getErrorStream(),"ERROR");
+            ShellOutHandler errorHandler = new ShellOutHandler(process.getErrorStream(), "ERROR");
             errorHandler.start();
             int exitCode = process.waitFor();
             return exitCode;
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return 3;
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
             return 4;
         }
     }
 
-    public ShellFeedback executeShellWithFeedback(){
+    public ShellFeedback executeShellWithFeedback() {
         String cmd = constructCMD();
         List<String> output = new ArrayList<>();
         int exitCode = 0;
-        try
-        {
+        try {
             Process process = Runtime.getRuntime().exec(cmd);
+            getOutput(output, process.getInputStream());
+            getOutput(output,process.getErrorStream());
             exitCode = process.waitFor();
-            BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = "";
-            while ((line = input.readLine()) != null){
-                output.add(line);
-            }
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
         }
-        catch (IOException e)
-        {
-           LOGGER.error(e.getMessage());
-        }
-        catch (InterruptedException e)
-        {
-           LOGGER.error(e.getMessage());
-        }
-        return new ShellFeedback(output, exitCode);
+        return new ShellFeedback(this.command, output, exitCode);
     }
 
-    private String constructCMD(){
+    private String constructCMD() {
         String cmd;
         String main = this.command.split(" ")[0];
         File f = new File(main);
-        if (f.exists()){
+        if (f.exists()) {
             LOGGER.debug("The command is a shell script.");
             cmd = "sh " + this.command;
-        }
-        else {
+        } else {
             LOGGER.debug("The command is a shell command.");
             cmd = this.command;
         }
         return cmd;
+    }
+
+    private void getOutput(List<String> output, InputStream inputStream) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                try {
+                    while ((line = br.readLine()) != null) {
+                        output.add(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 }
