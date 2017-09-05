@@ -4,4 +4,4 @@ NE3SWSReregistration.sh
 out/
 target/
 log/
-ReregistrationTest.java
+ReregistrationMain.java
