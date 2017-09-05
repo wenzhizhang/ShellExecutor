@@ -22,10 +22,6 @@ public class ShellExecutor {
         String cmd = constructCMD();
         try {
             Process process = Runtime.getRuntime().exec(cmd);
-            ShellOutHandler outHandler = new ShellOutHandler(process.getInputStream(), "STDOUT");
-            outHandler.start();
-            ShellOutHandler errorHandler = new ShellOutHandler(process.getErrorStream(), "ERROR");
-            errorHandler.start();
             int exitCode = process.waitFor();
             return exitCode;
         } catch (IOException e) {
@@ -41,6 +37,7 @@ public class ShellExecutor {
         String cmd = constructCMD();
         List<String> output = new ArrayList<>();
         int exitCode = 0;
+        long startTime = System.currentTimeMillis();
         try {
             Process process = Runtime.getRuntime().exec(cmd);
             getOutput(output, process.getInputStream());
@@ -51,7 +48,8 @@ public class ShellExecutor {
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
         }
-        return new ShellFeedback(this.command, output, exitCode);
+        long procTime = System.currentTimeMillis() - startTime;
+        return new ShellFeedback(this.command, output, exitCode, procTime);
     }
 
     private String constructCMD() {

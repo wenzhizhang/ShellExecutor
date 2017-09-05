@@ -129,6 +129,7 @@ public class RemoteShellExecutor {
         }
         int response = 0;
         List<String> output = new ArrayList<String>();
+        long startTime = System.currentTimeMillis();
         try {
             ChannelExec channel = this.getExecChannel(session, command, charset);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(channel.getInputStream(), Charset.forName(charset)));
@@ -147,7 +148,8 @@ public class RemoteShellExecutor {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
-        ShellFeedback shellFeedback = new ShellFeedback(command,output, response);
+        long procTime = System.currentTimeMillis() - startTime;
+        ShellFeedback shellFeedback = new ShellFeedback(command,output, response, procTime);
         return shellFeedback;
 
     }

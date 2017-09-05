@@ -15,7 +15,7 @@
 
         <RollingFile name="Activity_appender" append="true"
                      immediateFlush="true" fileName="${LOG_HOME}/activity.log"
-                     filePattern="${LOG_HOME}/service.log.%d{yyyy-MM-dd}.log.gz">
+                     filePattern="${LOG_HOME}/activity.log.%d{yyyy-MM-dd}.log.gz">
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout>
                 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %class{36} %t %M -- %msg%xEx%n</pattern>
@@ -27,7 +27,7 @@
 
         <RollingFile name="Debug_appender" append="true"
                      immediateFlush="true" fileName="${LOG_HOME}/trace.log"
-                     filePattern="${LOG_HOME}/service.log.%d{yyyy-MM-dd}.debug.gz">
+                     filePattern="${LOG_HOME}/trace.log.%d{yyyy-MM-dd}.debug.gz">
             <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout>
                 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %class{36} %t %M -- %msg%xEx%n</pattern>
@@ -39,7 +39,7 @@
 
         <RollingFile name="Error_appender" append="true"
                      immediateFlush="true" fileName="${LOG_HOME}/error.log"
-                     filePattern="${LOG_HOME}/service.log.%d{yyyy-MM-dd}.error.gz">
+                     filePattern="${LOG_HOME}/error.log.%d{yyyy-MM-dd}.error.gz">
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout>
                 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %class{36} %t %M -- %msg%xEx%n</pattern>

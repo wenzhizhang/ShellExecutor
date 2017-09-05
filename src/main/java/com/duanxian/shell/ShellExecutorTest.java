@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 /**
  * Created by yanbizha on 2017/8/31.
@@ -18,9 +17,11 @@ public class ShellExecutorTest
     private static final String TEST = "testShell.sh ";
 
 
-    public static void main(String[] args){
+    public static void main(String[] args)
+    {
         List<String> cmdList = new ArrayList<>();
-        for (int i=0;i<100;i++){
+        for (int i = 0; i < 100; i++)
+        {
             String command = TEST + i;
             cmdList.add(command);
         }
@@ -29,12 +30,14 @@ public class ShellExecutorTest
         List<String> succList = batchShellExecutor.getSuccList();
         List<String> failedList = batchShellExecutor.getFailedList();
         StringBuilder succSB = new StringBuilder();
-        for (String line: succList){
+        for (String line : succList)
+        {
             succSB.append(line);
         }
         LOGGER.info("Succeeded List: \n" + succSB.toString());
         StringBuilder failedSB = new StringBuilder();
-        for (String line : failedList){
+        for (String line : failedList)
+        {
             failedSB.append(line);
         }
         LOGGER.info("Failed List: \n" + failedSB.toString());
