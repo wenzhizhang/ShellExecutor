@@ -13,29 +13,29 @@ import java.util.concurrent.*;
 public class BatchShellExecutor
 {
 
-    private static final int POOL_SIZE = 100;
+    private static final int POOL_SIZE = 50;
     private static final int TIMEOUT = 120;
     private static final Logger LOGGER = LogManager.getLogger(BatchShellExecutor.class);
     private static final ExitCode EXIT_CODE = new ExitCode();
-    private List<String> succList = new ArrayList<>();
-    private List<String> failedList = new ArrayList<>();
+    private List<ShellFeedback> succList = new ArrayList<>();
+    private List<ShellFeedback> failedList = new ArrayList<>();
 
-    public List<String> getSuccList()
+    public List<ShellFeedback> getSuccList()
     {
         return succList;
     }
 
-    public void setSuccList(List<String> succList)
+    public void setSuccList(List<ShellFeedback> succList)
     {
         this.succList = succList;
     }
 
-    public List<String> getFailedList()
+    public List<ShellFeedback> getFailedList()
     {
         return failedList;
     }
 
-    public void setFailedList(List<String> failedList)
+    public void setFailedList(List<ShellFeedback> failedList)
     {
         this.failedList = failedList;
     }
@@ -55,48 +55,43 @@ public class BatchShellExecutor
         {
             Future<ShellFeedback> future = null;
             String command = null;
+            ShellFeedback feedback = null;
             try
             {
                 future = completionService.take();
-                ShellFeedback feedback = future.get(TIMEOUT, TimeUnit.SECONDS);
+                feedback = future.get(TIMEOUT, TimeUnit.SECONDS);
                 int exitCode = feedback.getExitCode();
-//                List<String> output = feedback.getOutput();
-                command = feedback.getCommand();
-//                StringBuilder sb = new StringBuilder();
-//                for (String line : output) {
-//                    sb.append(line);
-//                }
-//                LOGGER.debug("Output: \n" + sb.toString());
-                LOGGER.info("Exit code is: " + exitCode);
-                LOGGER.info("Command execution result is: " + EXIT_CODE.getResultByExitCode(exitCode));
+//                command = feedback.getCommand();
+//                LOGGER.info("Exit code is: " + exitCode);
+//                LOGGER.info("Command execution result is: " + EXIT_CODE.getResultByExitCode(exitCode));
                 long timeCost = feedback.getProcTime();
-                LOGGER.info("Time cost: " + timeCost + " ms");
+                LOGGER.debug("Time cost: " + timeCost + " ms");
                 if (exitCode == 0)
                 {
-                    addToSuccList(command);
+                    addToSuccList(feedback);
                 }
                 else
                 {
-                    addToFailedList(command);
+                    addToFailedList(feedback);
                 }
             }
             catch (InterruptedException e)
             {
                 LOGGER.error(e.getMessage());
                 future.cancel(true);
-                addToFailedList(command);
+                addToFailedList(feedback);
             }
             catch (ExecutionException e)
             {
                 LOGGER.error(e.getMessage());
                 future.cancel(true);
-                addToFailedList(command);
+                addToFailedList(feedback);
             }
             catch (TimeoutException e)
             {
                 LOGGER.error("Shell execution failed due to timeout.");
                 future.cancel(true);
-                addToFailedList(command);
+                addToFailedList(feedback);
             }
         }
         executorService.shutdown();
@@ -104,14 +99,14 @@ public class BatchShellExecutor
         LOGGER.info("Total time cost is: " + totalTime + "ms");
     }
 
-    private synchronized void addToSuccList(String command)
+    private synchronized void addToSuccList(ShellFeedback shellFeedback)
     {
-        succList.add(command);
+        succList.add(shellFeedback);
     }
 
-    private synchronized void addToFailedList(String command)
+    private synchronized void addToFailedList(ShellFeedback shellFeedback)
     {
-        failedList.add(command);
+        failedList.add(shellFeedback);
     }
 
 }

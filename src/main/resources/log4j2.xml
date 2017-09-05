@@ -51,7 +51,7 @@
     </Appenders>
 
     <Loggers>
-        <root level="debug">
+        <root level="info">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="Activity_appender"/>
             <AppenderRef ref="Debug_appender"/>

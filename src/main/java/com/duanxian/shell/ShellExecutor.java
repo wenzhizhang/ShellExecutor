@@ -10,73 +10,101 @@ import java.util.List;
 /**
  * Created by Lionsong on 2017/7/6.
  */
-public class ShellExecutor {
+public class ShellExecutor
+{
     private static final Logger LOGGER = LogManager.getLogger(ShellExecutor.class);
     private String command;
 
-    public ShellExecutor(String command) {
+    public ShellExecutor(String command)
+    {
         this.command = command;
     }
 
-    public int executeShellWithExitCode() {
+    public int executeShellWithExitCode()
+    {
         String cmd = constructCMD();
-        try {
+        try
+        {
             Process process = Runtime.getRuntime().exec(cmd);
             int exitCode = process.waitFor();
             return exitCode;
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             LOGGER.error(e.getMessage());
             return 3;
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e)
+        {
             LOGGER.error(e.getMessage());
             return 4;
         }
     }
 
-    public ShellFeedback executeShellWithFeedback() {
+    public ShellFeedback executeShellWithFeedback()
+    {
         String cmd = constructCMD();
         List<String> output = new ArrayList<>();
         int exitCode = 0;
         long startTime = System.currentTimeMillis();
-        try {
+        try
+        {
+//            LOGGER.debug("Starting to execute command: " + cmd + ", start time: " + startTime);
             Process process = Runtime.getRuntime().exec(cmd);
             getOutput(output, process.getInputStream());
-            getOutput(output,process.getErrorStream());
+            getOutput(output, process.getErrorStream());
             exitCode = process.waitFor();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        } catch (InterruptedException e) {
+        }
+        catch (IOException e)
+        {
             LOGGER.error(e.getMessage());
         }
-        long procTime = System.currentTimeMillis() - startTime;
+        catch (InterruptedException e)
+        {
+            LOGGER.error(e.getMessage());
+        }
+        long endTime = System.currentTimeMillis();
+//        LOGGER.debug("End of command execution: " + cmd + ", end time: " + endTime);
+        long procTime = endTime - startTime;
         return new ShellFeedback(this.command, output, exitCode, procTime);
     }
 
-    private String constructCMD() {
+    private String constructCMD()
+    {
         String cmd;
         String main = this.command.split(" ")[0];
         File f = new File(main);
-        if (f.exists()) {
+        if (f.exists())
+        {
             LOGGER.debug("The command is a shell script.");
             cmd = "sh " + this.command;
-        } else {
+        }
+        else
+        {
             LOGGER.debug("The command is a shell command.");
             cmd = this.command;
         }
         return cmd;
     }
 
-    private void getOutput(List<String> output, InputStream inputStream) {
-        new Thread(new Runnable() {
+    private void getOutput(List<String> output, InputStream inputStream)
+    {
+        new Thread(new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
                 BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
-                try {
-                    while ((line = br.readLine()) != null) {
+                try
+                {
+                    while ((line = br.readLine()) != null)
+                    {
                         output.add(line);
                     }
-                } catch (IOException e) {
+                }
+                catch (IOException e)
+                {
                     e.printStackTrace();
                 }
             }
