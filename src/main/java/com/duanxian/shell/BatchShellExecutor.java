@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 public class BatchShellExecutor
 {
 
-    private static final int POOL_SIZE = 50;
+    private static final int POOL_SIZE = Config.getInt("POOL_SIZE", 30);
     private static final int TIMEOUT = 120;
     private static final Logger LOGGER = LogManager.getLogger(BatchShellExecutor.class);
     private static final ExitCode EXIT_CODE = new ExitCode();
@@ -42,6 +42,7 @@ public class BatchShellExecutor
 
     public void executeCommands(List<String> commandList)
     {
+        LOGGER.debug("Pool size is: " + POOL_SIZE);
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(POOL_SIZE);
         CompletionService<ShellFeedback> completionService = new ExecutorCompletionService<>(executorService);
@@ -51,6 +52,8 @@ public class BatchShellExecutor
             ShellExecutorThread executorThread = new ShellExecutorThread(command);
             completionService.submit(executorThread);
         }
+        int activeThreads = Thread.activeCount();
+        LOGGER.debug("Active threads: " + activeThreads);
         for (int i = 0; i < commandList.size(); i++)
         {
             Future<ShellFeedback> future = null;
@@ -96,7 +99,7 @@ public class BatchShellExecutor
         }
         executorService.shutdown();
         long totalTime = System.currentTimeMillis() - startTime;
-        LOGGER.info("Total time cost is: " + totalTime + "ms");
+        LOGGER.info("Total time cost is: " + totalTime + " ms");
     }
 
     private synchronized void addToSuccList(ShellFeedback shellFeedback)

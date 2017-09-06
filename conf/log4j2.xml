@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="WARN" monitorInterval="600">
+
+    <Properties>
+        <Property name="LOG_HOME">log</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %class{36} %t %M - %msg%xEx%n"/>
+        </Console>
+
+
+        <RollingFile name="Activity_appender" append="true"
+                     immediateFlush="true" fileName="${LOG_HOME}/activity.log"
+                     filePattern="${LOG_HOME}/activity.log.%d{yyyy-MM-dd}.log.gz">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %class{36} %t %M -- %msg%xEx%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="Debug_appender" append="true"
+                     immediateFlush="true" fileName="${LOG_HOME}/trace.log"
+                     filePattern="${LOG_HOME}/trace.log.%d{yyyy-MM-dd}.debug.gz">
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %class{36} %t %M -- %msg%xEx%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="Error_appender" append="true"
+                     immediateFlush="true" fileName="${LOG_HOME}/error.log"
+                     filePattern="${LOG_HOME}/error.log.%d{yyyy-MM-dd}.error.gz">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %class{36} %t %M -- %msg%xEx%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Activity_appender"/>
+            <AppenderRef ref="Debug_appender"/>
+            <AppenderRef ref="Error_appender"/>
+        </root>
+
+        <logger name="org.springframework.core" level="info"/>
+        <logger name="org.springframework.beans" level="info"/>
+        <logger name="org.springframework.context" level="info"/>
+        <logger name="org.springframework.web" level="info"/>
+        <logger name="org.jboss.netty" level="warn"/>
+        <logger name="org.apache.http" level="warn"/>
+
+        <logger name="Activity" level="info" includeLocation="true" additivity="true">
+            <AppenderRef ref="Activity_appender"/>
+        </logger>
+
+        <logger name="Debug" level="debug" includeLocation="true" additivity="false">
+            <AppenderRef ref="Debug_appender"/>
+        </logger>
+
+        <logger name="Error" level="error" includeLocation="true" additivity="false">
+            <AppenderRef ref="Error_appender"/>
+        </logger>
+
+    </Loggers>
+
+</Configuration>
